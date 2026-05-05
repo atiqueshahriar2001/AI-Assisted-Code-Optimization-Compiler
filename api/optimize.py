@@ -29,8 +29,9 @@ def handler(request):
             "body": json.dumps(result, indent=2)
         }
     except Exception as exc:
+        # Return JSON error instead of letting Vercel show HTML error page
         return {
-            "statusCode": 400,
+            "statusCode": 500,
             "headers": {"Content-Type": "application/json"},
-            "body": json.dumps({"error": str(exc)})
+            "body": json.dumps({"error": f"Internal server error: {str(exc)}"})
         }
