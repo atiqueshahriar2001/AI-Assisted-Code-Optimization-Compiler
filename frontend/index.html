@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI-Assisted Code Optimization Compiler</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <main class="app-shell">
+    <section class="workspace">
+      <header class="command-bar">
+        <div>
+          <p class="eyebrow">AI-Assisted Code Optimization Compiler</p>
+          <h2>Optimization Neural Workbench</h2>
+        </div>
+        <div class="actions">
+          <span id="scoreBadge">Score 0</span>
+          <button id="optimizeBtn" type="button">Optimize</button>
+        </div>
+      </header>
+
+      <section class="code-stage" aria-label="Code editor and optimizer output">
+        <section class="code-pane source-pane">
+          <div class="pane-head">
+            <div>
+              <p class="panel-kicker">Input stream</p>
+              <h3>Source Code</h3>
+            </div>
+            <span class="pane-tag">Editable</span>
+          </div>
+          <textarea id="sourceInput" spellcheck="false"></textarea>
+        </section>
+
+        <section class="code-pane output-pane">
+          <div class="pane-head">
+            <div>
+              <p class="panel-kicker">Model output</p>
+              <h3>Optimized Code</h3>
+            </div>
+            <span class="pane-tag">Generated</span>
+          </div>
+          <pre id="optimizedOutput"></pre>
+        </section>
+      </section>
+
+      <section class="inspector-grid">
+        <section class="inspector-panel analysis-panel">
+          <div class="section-head">
+            <div>
+              <p class="panel-kicker">Static scan</p>
+              <h3>Analysis</h3>
+            </div>
+            <span id="complexityBadge">O(?)</span>
+          </div>
+          <div id="analysisGrid" class="metric-grid"></div>
+        </section>
+
+        <section class="inspector-panel pass-panel">
+          <div class="section-head">
+            <div>
+              <p class="panel-kicker">Pipeline</p>
+              <h3>Optimization Passes</h3>
+            </div>
+            <span id="passBadge">0 active</span>
+          </div>
+          <div id="passList" class="pass-list"></div>
+        </section>
+
+        <section class="inspector-panel suggestions-panel">
+          <div class="section-head">
+            <div>
+              <p class="panel-kicker">Review queue</p>
+              <h3>Optimization Suggestions</h3>
+            </div>
+            <span id="countBadge">0 found</span>
+          </div>
+          <div id="suggestionList" class="suggestion-list"></div>
+        </section>
+      </section>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

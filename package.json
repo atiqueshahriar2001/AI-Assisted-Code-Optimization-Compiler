@@ -1,0 +1,9 @@
+{
+  "name": "ai-assisted-code-optimization-compiler",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "python backend/app.py",
+    "start": "python backend/app.py"
+  }
+}
