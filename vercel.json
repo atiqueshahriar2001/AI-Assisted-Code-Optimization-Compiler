@@ -5,12 +5,6 @@
       "runtime": "@vercel/python"
     }
   },
-  "builds": [
-    {
-      "src": "frontend/**/*",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
       "src": "/optimize",
