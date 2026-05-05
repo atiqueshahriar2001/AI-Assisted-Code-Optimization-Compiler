@@ -32,3 +32,9 @@ node_modules/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+.cache/

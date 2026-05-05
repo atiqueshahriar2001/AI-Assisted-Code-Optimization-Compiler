@@ -1,10 +1,11 @@
 {
   "version": 2,
+  "functions": {
+    "api/optimize.py": {
+      "runtime": "@vercel/python"
+    }
+  },
   "builds": [
-    {
-      "src": "api/optimize.py",
-      "use": "@vercel/python"
-    },
     {
       "src": "frontend/**/*",
       "use": "@vercel/static"
