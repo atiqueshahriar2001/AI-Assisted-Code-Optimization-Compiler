@@ -7,7 +7,8 @@ from .base import OptimizationPass
 
 
 POWER_TWO_RE = re.compile(
-    r"^(?:(?P<value_left>[A-Za-z_]\w*)\s*\*\s*(?P<constant_right>2|4|8|16|32|64)|"
+    r"^(?:int\s+)?(?P<target>[A-Za-z_]\w*)\s*=\s*"
+    r"(?:(?P<value_left>[A-Za-z_]\w*)\s*\*\s*(?P<constant_right>2|4|8|16|32|64)|"
     r"(?P<constant_left>2|4|8|16|32|64)\s*\*\s*(?P<value_right>[A-Za-z_]\w*))$"
 )
 
@@ -23,7 +24,7 @@ class StrengthReductionPass(OptimizationPass):
             if statement.kind != "assignment" or not statement.expression or not statement.target:
                 continue
 
-            match = POWER_TWO_RE.match(statement.expression)
+            match = POWER_TWO_RE.match(statement.text.rstrip(';'))
             if not match:
                 continue
 

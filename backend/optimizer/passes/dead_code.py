@@ -20,8 +20,12 @@ class DeadAssignmentPass(OptimizationPass):
         dead_statements: list[str] = []
 
         for statement in program.statements:
-            if statement.kind != "assignment" or not statement.target:
-                self.mark_used_identifiers(statement.text, last_assignment)
+            if statement.kind not in ("assignment", "return") or not statement.target:
+                if statement.text:
+                    self.mark_used_identifiers(statement.text, last_assignment)
+                continue
+
+            if statement.kind == "return":
                 continue
 
             if statement.expression:

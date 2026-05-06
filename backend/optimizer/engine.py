@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import re
 from dataclasses import asdict
 
 from .analysis import analyze_program
 from .models import OptimizationContext
-from .parser import parse_program
+from .c_parser import parse_c_code
+from .codegen import format_optimized_code
 from .passes import DEFAULT_PASSES
 
 
@@ -12,7 +14,9 @@ def optimize_code(source: str, enabled_passes: list[str] | None = None) -> dict:
     normalized = source.strip()
     context = OptimizationContext(source=normalized, optimized=normalized)
     enabled = set(enabled_passes or [item.name for item in DEFAULT_PASSES])
-    source_analysis = analyze_program(parse_program(normalized))
+    
+    program = parse_c_code(normalized)
+    source_analysis = analyze_program(program)
 
     for optimization_pass in DEFAULT_PASSES:
         if optimization_pass.name in enabled:
@@ -27,11 +31,13 @@ def optimize_code(source: str, enabled_passes: list[str] | None = None) -> dict:
                 }
             )
 
-    optimized_analysis = analyze_program(parse_program(context.optimized))
+    optimized_analysis = analyze_program(parse_c_code(context.optimized))
     score = calculate_score(context)
 
+    formatted_code = format_optimized_code(context.optimized)
+
     return {
-        "optimized_code": context.optimized,
+        "optimized_code": formatted_code,
         "suggestions": [asdict(item) for item in context.suggestions],
         "score": score,
         "analysis": source_analysis,

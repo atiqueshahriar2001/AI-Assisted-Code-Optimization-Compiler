@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 from ..models import OptimizationContext, PassReport
-from ..parser import parse_program
+from ..c_parser import parse_c_code
 
 
 class OptimizationPass(ABC):
@@ -30,4 +30,4 @@ class OptimizationPass(ABC):
         raise NotImplementedError
 
     def program(self, context: OptimizationContext):
-        return parse_program(context.optimized)
+        return parse_c_code(context.optimized)

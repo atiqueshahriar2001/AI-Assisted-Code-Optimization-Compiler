@@ -1,3 +1,1 @@
-# This project uses only Python standard library.
-# No third-party packages are required.
-# Python version is specified in render.yaml and runtime.txt.
+pycparser>=2.21
