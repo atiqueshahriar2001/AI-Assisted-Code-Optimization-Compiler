@@ -106,6 +106,8 @@ function renderAnalysis(analysis, optimizedAnalysis = null) {
     ["Source statements", analysis.statement_count],
     ["Source assignments", analysis.assignment_count],
     ["Source loops", analysis.loop_count],
+    ["Source function calls", analysis.function_call_count],
+    ["Source functions", analysis.function_definition_count],
     ["Identifiers", analysis.unique_identifier_count]
   ];
 
