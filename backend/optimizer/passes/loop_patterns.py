@@ -6,36 +6,37 @@ from ..models import OptimizationContext, Suggestion
 from .base import OptimizationPass
 
 
+TYPE_DECL = r"(?:int|long|float|double|char|short)\s+"
+
 SUMMATION_RE = re.compile(
-    r"(?P<sum>\w+)\s*=\s*0\s*;\s*"
-    r"for\s*\(\s*"
-    r"(?P<i>\w+)\s*=\s*1\s*;\s*"
+    r"(?:(?:" + TYPE_DECL + r"))?(?P<sum>\w+)\s*=\s*0\s*;\s*"
+    r"for\s*\(\s*(?:(?:" + TYPE_DECL + r"))?(?P<i>\w+)\s*=\s*1\s*;\s*"
     r"(?P=i)\s*<=\s*(?P<n>\w+)\s*;\s*"
     r"(?P=i)\s*=\s*(?P=i)\s*\+\s*1\s*"
     r"\)\s*\{\s*"
     r"(?P=sum)\s*=\s*(?P=sum)\s*\+\s*(?P=i)\s*;?\s*"
     r"\}",
-    re.DOTALL
+    re.DOTALL,
 )
 
 SUMMATION_RE_MULTILINE = re.compile(
-    r"(?P<sum>\w+)\s*=\s*0\s*;"
+    r"(?:(?:" + TYPE_DECL + r"))?(?P<sum>\w+)\s*=\s*0\s*;"
     r".*?"
-    r"for\s*\(\s*(?P<i>\w+)\s*=\s*1\s*;\s*(?P=i)\s*<=\s*(?P<n>\w+)\s*;\s*(?P=i)\s*=\s*(?P=i)\s*\+\s*1\s*\)\s*\{"
+    r"for\s*\(\s*(?:(?:" + TYPE_DECL + r"))?(?P<i>\w+)\s*=\s*1\s*;\s*(?P=i)\s*<=\s*(?P<n>\w+)\s*;\s*(?P=i)\s*=\s*(?P=i)\s*\+\s*1\s*\)\s*\{"
     r".*?"
     r"(?P=sum)\s*=\s*(?P=sum)\s*\+\s*(?P=i)\s*;\s*"
     r"\}",
-    re.DOTALL
+    re.DOTALL,
 )
 
 SUMMATION_RE_ALT = re.compile(
-    r"(?P<sum>\w+)\s*=\s*0\s*;"
+    r"(?:(?:" + TYPE_DECL + r"))?(?P<sum>\w+)\s*=\s*0\s*;"
     r".*?"
-    r"for\s*\(\s*(?P<i>\w+)\s*=\s*0\s*;\s*(?P=i)\s*<\s*(?P<n>\w+)\s*;\s*(?P=i)\s*\+\s*\+\s*\)\s*\{"
+    r"for\s*\(\s*(?:(?:" + TYPE_DECL + r"))?(?P<i>\w+)\s*=\s*0\s*;\s*(?P=i)\s*<\s*(?P<n>\w+)\s*;\s*(?P=i)\s*\+\s*\+\s*\)\s*\{"
     r".*?"
     r"(?P=sum)\s*=\s*(?P=sum)\s*\+\s*(?P=i)\s*;\s*"
     r"\}",
-    re.DOTALL
+    re.DOTALL,
 )
 
 

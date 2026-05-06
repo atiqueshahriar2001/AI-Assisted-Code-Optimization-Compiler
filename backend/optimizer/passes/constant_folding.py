@@ -7,7 +7,10 @@ from .base import OptimizationPass
 from .common import safe_eval_arithmetic
 
 
-DECL_RE = re.compile(r'^(?:int|void|float|double|char|long|short)\s+([A-Za-z_]\w*)\s*=\s*(.+)$')
+DECL_RE = re.compile(
+    r'^(?P<prefix>(?:int|void|float|double|char|long|short|unsigned|signed|static|const)\s+)'
+    r'(?P<target>[A-Za-z_]\w*)\s*=\s*(?P<expr>.+)$'
+)
 
 
 class ConstantFoldingPass(OptimizationPass):
@@ -18,21 +21,17 @@ class ConstantFoldingPass(OptimizationPass):
         program = self.program(context)
 
         for statement in program.statements:
-            if statement.kind != "assignment" or not statement.expression or not statement.target:
+            if statement.kind not in ("assignment", "declaration") or not statement.expression or not statement.target:
                 continue
 
-            decl_match = DECL_RE.match(statement.text.rstrip(';'))
-            is_declaration = decl_match is not None
+            decl_match = DECL_RE.match(statement.text.rstrip(";"))
+            prefix = decl_match.group("prefix") if decl_match else ""
 
             folded = safe_eval_arithmetic(statement.expression)
             if folded is None or str(folded) == statement.expression:
                 continue
 
-            if is_declaration:
-                after = f"{statement.target} = {folded};"
-            else:
-                after = f"{statement.target} = {folded};"
-            
+            after = f"{prefix}{statement.target} = {folded};"
             context.optimized = context.optimized.replace(statement.text, after, 1)
             context.suggestions.append(
                 Suggestion(

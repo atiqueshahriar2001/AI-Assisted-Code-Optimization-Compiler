@@ -5,7 +5,15 @@ import re
 from .models import Program, Statement
 
 
-ASSIGNMENT_RE = re.compile(r"^(?P<target>[A-Za-z_]\w*)\s*=\s*(?P<expr>.+);$")
+ASSIGNMENT_RE = re.compile(
+    r"^(?:(?:int|void|float|double|char|long|short|unsigned|signed|static|const)\s+)?"
+    r"(?P<target>[A-Za-z_]\w*)\s*=\s*(?P<expr>.+);$"
+)
+FUNCTION_DEF_RE = re.compile(
+    r"^(?:int|void|float|double|char|long|short|unsigned|signed)\s+"
+    r"(?P<name>[A-Za-z_]\w*)\s*\([^)]*\)\s*\{",
+    re.DOTALL,
+)
 FOR_HEADER_RE = re.compile(
     r"for\s*\(\s*(?P<init>[^;]+);\s*(?P<condition>[^;]+);\s*(?P<update>[^)]+)\s*\)\s*\{"
 )
@@ -27,6 +35,16 @@ def parse_program(source: str) -> Program:
 
         statement_line = line_no
 
+        if starts_function_definition(source, index):
+            end = find_function_header_end(source, index)
+            header_text = source[index:end].strip()
+            line_no += source[index:end].count("\n")
+            index = end
+            statements.append(
+                Statement(kind="function_definition", text=header_text, line=statement_line)
+            )
+            continue
+
         if starts_for_statement(source, index):
             end = find_for_loop_end(source, index)
             block_text = source[index:end].strip()
@@ -44,6 +62,16 @@ def parse_program(source: str) -> Program:
             )
             continue
 
+        if source[index] == "}":
+            statements.append(Statement(kind="block_end", text="}", line=statement_line))
+            index += 1
+            continue
+
+        if source[index] == "{":
+            statements.append(Statement(kind="block_start", text="{", line=statement_line))
+            index += 1
+            continue
+
         end = source.find(";", index)
         if end == -1:
             end = len(source) - 1
@@ -55,9 +83,10 @@ def parse_program(source: str) -> Program:
 
         assignment = ASSIGNMENT_RE.match(text)
         if assignment:
+            kind = "declaration" if text.startswith(("int ", "void ", "float ", "double ", "char ", "long ", "short ", "unsigned ", "signed ", "static ", "const ")) else "assignment"
             statements.append(
                 Statement(
-                    kind="assignment",
+                    kind=kind,
                     text=text,
                     line=statement_line,
                     target=assignment.group("target"),
@@ -80,6 +109,15 @@ def starts_for_statement(source: str, index: int) -> bool:
 
 def is_identifier_char(char: str) -> bool:
     return char.isalnum() or char == "_"
+
+
+def starts_function_definition(source: str, index: int) -> bool:
+    return bool(FUNCTION_DEF_RE.match(source[index:]))
+
+
+def find_function_header_end(source: str, start: int) -> int:
+    open_brace = source.find("{", start)
+    return open_brace + 1 if open_brace != -1 else start
 
 
 def find_for_loop_end(source: str, start: int) -> int:

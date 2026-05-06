@@ -40,6 +40,9 @@ class CParser:
                 ))
                 if 'name' in metadata:
                     self.functions[metadata['name']] = metadata
+                if metadata.get('body'):
+                    body_lines = metadata['body'].split('\n')
+                    self.parse_function_body(body_lines, self.line_no + 1)
                 i = block_end + 1
                 self.line_no += block_text.count('\n')
                 continue
@@ -100,23 +103,41 @@ class CParser:
                         return i
         return start
     
-    def parse_function_body(self, body_text: str) -> list[Statement]:
-        statements: list[Statement] = []
-        lines = body_text.split('\n')
-        
-        for line in lines:
+    def parse_function_body(self, body_lines: list[str], start_line: int) -> None:
+        i = 0
+        line_no = start_line
+        while i < len(body_lines):
+            line = body_lines[i]
             stripped = line.strip()
             if not stripped or stripped.startswith('//') or stripped.startswith('/*'):
+                i += 1
+                line_no += 1
                 continue
-            
-            if stripped.endswith('{') or stripped in ['}', '']:
+
+            for_match = re.search(r'\bfor\s*\(', stripped)
+            while_match = re.search(r'\bwhile\s*\(', stripped)
+            if_match = re.search(r'\bif\s*\(', stripped)
+
+            if for_match or while_match or if_match:
+                block_end = self.find_block_end(body_lines, i)
+                block_text = '\n'.join(body_lines[i:block_end + 1])
+                stmt_type, metadata = self.parse_c_block(stripped, block_text)
+                self.statements.append(Statement(
+                    kind=stmt_type,
+                    text=block_text,
+                    line=line_no,
+                    metadata=metadata
+                ))
+                i = block_end + 1
+                line_no += block_text.count('\n') + 1
                 continue
-            
+
             if stripped.endswith(';') or self.is_declaration(stripped):
-                parsed = self.parse_c_statement(stripped, 1)
-                statements.append(parsed)
-        
-        return statements
+                parsed = self.parse_c_statement(stripped, line_no)
+                self.statements.append(parsed)
+
+            i += 1
+            line_no += 1
     
     def parse_c_block(self, first_line: str, block_text: str) -> tuple[str, dict]:
         for_match = re.search(r'\bfor\s*\(', first_line)

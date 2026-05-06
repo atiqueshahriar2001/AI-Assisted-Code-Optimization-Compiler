@@ -12,38 +12,36 @@ class AlgebraicSimplificationPass(OptimizationPass):
 
     def apply(self, context: OptimizationContext) -> None:
         patterns = [
-            (r'x\s*\*\s*1', 'x', "Multiplication by 1 identity"),
-            (r'x\s*\*\s*0', '0', "Multiplication by 0 identity"),
-            (r'x\s*\+ 0', 'x', "Addition of 0 identity"),
-            (r'x\s*-\s*0', 'x', "Subtraction of 0 identity"),
-            (r'x\s*/\s*1', 'x', "Division by 1 identity"),
-            (r'x\s*\+\s*x', 'x * 2', "Addition of variable to itself"),
-            (r'x\s*-\s*x', '0', "Subtraction of variable from itself"),
+            (re.compile(r"(?P<expr>\b[A-Za-z_]\w*\b)\s*\*\s*1"), lambda m: m.group("expr"), "Multiplication by 1 identity"),
+            (re.compile(r"(?P<expr>\b[A-Za-z_]\w*\b)\s*\*\s*0"), lambda m: "0", "Multiplication by 0 identity"),
+            (re.compile(r"(?P<expr>\b[A-Za-z_]\w*\b)\s*\+\s*0"), lambda m: m.group("expr"), "Addition of 0 identity"),
+            (re.compile(r"(?P<expr>\b[A-Za-z_]\w*\b)\s*-\s*0"), lambda m: m.group("expr"), "Subtraction of 0 identity"),
+            (re.compile(r"(?P<expr>\b[A-Za-z_]\w*\b)\s*/\s*1"), lambda m: m.group("expr"), "Division by 1 identity"),
+            (re.compile(r"(?P<expr>\b[A-Za-z_]\w*\b)\s*\+\s*(?P=expr)"), lambda m: f"{m.group('expr')} * 2", "Addition of variable to itself"),
+            (re.compile(r"(?P<expr>\b[A-Za-z_]\w*\b)\s*-\s*(?P=expr)"), lambda m: "0", "Subtraction of variable from itself"),
         ]
-        
+
         for pattern, replacement, explanation in patterns:
-            def make_replacer(repl, expl):
-                def replacer(match):
-                    return repl
-                return replacer
-            
-            for match in re.finditer(pattern, context.optimized):
-                start, end = match.span()
+            def replacer(match: re.Match[str]) -> str:
                 before = match.group(0)
-                after = re.sub(pattern, replacement, before)
-                
-                if before != after:
-                    context.optimized = context.optimized[:start] + after + context.optimized[end:]
-                    context.suggestions.append(
-                        Suggestion(
-                            title="Algebraic simplification",
-                            explanation=explanation,
-                            before=before,
-                            after=after,
-                            confidence=0.90,
-                            strategy="algebraic_simplification",
-                            pass_name=self.name,
-                            line=context.optimized[:start].count("\n") + 1,
-                            impact="low",
-                        )
+                after = replacement(match) if callable(replacement) else replacement
+                if before == after:
+                    return before
+
+                line = context.optimized[: match.start()].count("\n") + 1
+                context.suggestions.append(
+                    Suggestion(
+                        title="Algebraic simplification",
+                        explanation=explanation,
+                        before=before,
+                        after=after,
+                        confidence=0.90,
+                        strategy="algebraic_simplification",
+                        pass_name=self.name,
+                        line=line,
+                        impact="low",
                     )
+                )
+                return after
+
+            context.optimized = pattern.sub(replacer, context.optimized)

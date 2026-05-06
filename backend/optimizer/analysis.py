@@ -19,7 +19,7 @@ def analyze_program(program: Program) -> dict:
     ]
     counts = Counter(identifiers)
     loops = sum(1 for statement in program.statements if statement.kind in ('for_loop', 'while_loop'))
-    assignments = sum(1 for statement in program.statements if statement.kind == "assignment")
+    assignments = sum(1 for statement in program.statements if statement.kind in ("assignment", "declaration"))
     function_calls = sum(1 for statement in program.statements if statement.kind == "function_call")
     function_defs = sum(1 for statement in program.statements if statement.kind == "function_definition")
 

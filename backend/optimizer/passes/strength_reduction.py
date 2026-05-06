@@ -7,7 +7,8 @@ from .base import OptimizationPass
 
 
 POWER_TWO_RE = re.compile(
-    r"^(?:int\s+)?(?P<target>[A-Za-z_]\w*)\s*=\s*"
+    r"^(?P<prefix>(?:int\s+|unsigned\s+|signed\s+|static\s+|const\s+)*)"
+    r"(?P<target>[A-Za-z_]\w*)\s*=\s*"
     r"(?:(?P<value_left>[A-Za-z_]\w*)\s*\*\s*(?P<constant_right>2|4|8|16|32|64)|"
     r"(?P<constant_left>2|4|8|16|32|64)\s*\*\s*(?P<value_right>[A-Za-z_]\w*))$"
 )
@@ -21,17 +22,18 @@ class StrengthReductionPass(OptimizationPass):
         program = self.program(context)
 
         for statement in program.statements:
-            if statement.kind != "assignment" or not statement.expression or not statement.target:
+            if statement.kind not in ("assignment", "declaration") or not statement.expression or not statement.target:
                 continue
 
-            match = POWER_TWO_RE.match(statement.text.rstrip(';'))
+            match = POWER_TWO_RE.match(statement.text.rstrip(";"))
             if not match:
                 continue
 
+            prefix = match.group("prefix") or ""
             constant = int(match.group("constant_right") or match.group("constant_left"))
             value = match.group("value_left") or match.group("value_right")
             shift = constant.bit_length() - 1
-            after = f"{statement.target} = {value} << {shift};"
+            after = f"{prefix}{statement.target} = {value} << {shift};"
             context.optimized = context.optimized.replace(statement.text, after, 1)
             context.suggestions.append(
                 Suggestion(
