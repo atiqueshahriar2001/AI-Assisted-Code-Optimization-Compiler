@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import re
 
-from optimizer.models import OptimizationContext, Suggestion
-from optimizer.passes.base import OptimizationPass
+from ..models import OptimizationContext, Suggestion
+from .base import OptimizationPass
 
 
 SUMMATION_RE = re.compile(

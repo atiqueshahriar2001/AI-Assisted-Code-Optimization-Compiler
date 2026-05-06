@@ -2,7 +2,7 @@ import json
 import sys
 import os
 
-from optimizer.engine import optimize_code
+from .optimizer.engine import optimize_code
 
 
 def handler(request):

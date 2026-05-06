@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from optimizer.models import OptimizationContext, PassReport
-from optimizer.parser import parse_program
+from ..models import OptimizationContext, PassReport
+from ..parser import parse_program
 
 
 class OptimizationPass(ABC):

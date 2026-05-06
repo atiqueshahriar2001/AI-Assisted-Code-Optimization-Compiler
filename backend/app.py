@@ -1,12 +1,17 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import sys
 import json
 import mimetypes
 import os
 import socket
-import sys
 
-from optimizer.engine import optimize_code
+# Add project root to sys.path for imports when running as a script
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from backend.optimizer.engine import optimize_code
 
 
 ROOT = Path(__file__).parent.resolve()
@@ -106,7 +111,6 @@ def main():
         print(f"Port {requested_port} is already in use; using port {port} instead.", flush=True)
 
     print(f"AI-Assisted Code Optimization Compiler running at http://localhost:{port}", flush=True)
-    print(f"Access from other devices: http://<your-ip>:{port}", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import asdict
 
-from optimizer.analysis import analyze_program
-from optimizer.models import OptimizationContext
-from optimizer.parser import parse_program
-from optimizer.passes import DEFAULT_PASSES
+from .analysis import analyze_program
+from .models import OptimizationContext
+from .parser import parse_program
+from .passes import DEFAULT_PASSES
 
 
 def optimize_code(source: str, enabled_passes: list[str] | None = None) -> dict:

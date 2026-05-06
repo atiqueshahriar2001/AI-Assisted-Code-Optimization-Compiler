@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from collections import Counter
 
-from optimizer.models import Program
+from .models import Program
 
 
 IDENTIFIER_RE = re.compile(r"\b[A-Za-z_]\w*\b")

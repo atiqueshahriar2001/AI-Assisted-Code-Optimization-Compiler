@@ -18,6 +18,17 @@ The runnable demo uses Python's standard library only.
 - Reports basic static analysis metrics and per-pass optimization counts
 - Returns optimization explanations and an estimated confidence score
 
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/atiqueshahriar2001/AI-Assisted-Code-Optimization-Compiler.git
+cd AI-Assisted-Code-Optimization-Compiler
+```
+
+No additional dependencies are required as the project uses only Python's standard library.
+
 ## Project Structure
 
 ```text
@@ -59,6 +70,30 @@ port:
 python backend/app.py 8001
 ```
 
+## API Usage
+
+The API accepts POST requests to `/optimize` with JSON payload:
+
+```json
+{
+  "source": "your code here",
+  "enabled_passes": ["constant_folding", "loop_patterns"]
+}
+```
+
+Response:
+
+```json
+{
+  "optimized_code": "optimized code",
+  "suggestions": [...],
+  "score": 85,
+  "analysis": {...},
+  "optimized_analysis": {...},
+  "passes": [...]
+}
+```
+
 ## Deploy To Vercel
 
 Push this repository to GitHub, then import it from Vercel. Keep the project
@@ -84,3 +119,11 @@ z = value * 8;
 temp = 10;
 temp = 20;
 ```
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.

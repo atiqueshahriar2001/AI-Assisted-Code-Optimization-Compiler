@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from optimizer.models import Program, Statement
+from .models import Program, Statement
 
 
 ASSIGNMENT_RE = re.compile(r"^(?P<target>[A-Za-z_]\w*)\s*=\s*(?P<expr>.+);$")

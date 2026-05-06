@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from optimizer.models import OptimizationContext, Suggestion
-from optimizer.passes.base import OptimizationPass
-from optimizer.passes.common import safe_eval_arithmetic
+from ..models import OptimizationContext, Suggestion
+from .base import OptimizationPass
+from .common import safe_eval_arithmetic
 
 
 class ConstantFoldingPass(OptimizationPass):
