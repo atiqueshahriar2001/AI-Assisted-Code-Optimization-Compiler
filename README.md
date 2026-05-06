@@ -4,7 +4,6 @@ A small teaching project that combines:
 
 - Python heuristic optimization rules
 - An HTML interface for trying optimization suggestions in the browser
-- A Vercel-ready Python serverless endpoint
 
 The runnable demo uses Python's standard library only.
 
@@ -32,12 +31,6 @@ No additional dependencies are required as the project uses only Python's standa
 ## Project Structure
 
 ```text
-api/
-  optimize.py            Vercel serverless /optimize API
-frontend/
-  index.html             browser interface
-  script.js              API client and rendering
-  styles.css             UI styles
 backend/
   app.py                 local HTTP server and /optimize API
   optimizer/
@@ -46,7 +39,10 @@ backend/
     analysis.py          static analysis metrics
     models.py            shared compiler data models
     passes/              pluggable optimization passes
-vercel.json              Vercel build and route config
+frontend/
+  index.html             browser interface
+  script.js              API client and rendering
+  styles.css             UI styles
 requirements.txt         Python dependency marker
 ```
 
@@ -62,50 +58,6 @@ Open:
 http://localhost:8000
 ```
 
-If port 8000 is already being used, the app automatically starts on the next
-available port and prints the URL. You can still request a specific starting
-port:
-
-```powershell
-python backend/app.py 8001
-```
-
-## API Usage
-
-The API accepts POST requests to `/optimize` with JSON payload:
-
-```json
-{
-  "source": "your code here",
-  "enabled_passes": ["constant_folding", "loop_patterns"]
-}
-```
-
-Response:
-
-```json
-{
-  "optimized_code": "optimized code",
-  "suggestions": [...],
-  "score": 85,
-  "analysis": {...},
-  "optimized_analysis": {...},
-  "passes": [...]
-}
-```
-
-## Deploy To Vercel
-
-Push this repository to GitHub, then import it from Vercel. Keep the project
-root as the Vercel root directory.
-
-Vercel uses:
-
-- `frontend/` for static files
-- `api/optimize.py` for the `/optimize` serverless function
-- `backend/optimizer/` for the optimization engine imported by the API
-- `vercel.json` for routing
-
 ## Example Input
 
 ```c
@@ -120,10 +72,19 @@ temp = 10;
 temp = 20;
 ```
 
-## Contributing
+## Deployment
 
-Contributions are welcome! Please open an issue or submit a pull request.
+### Render
 
-## License
+1. Create a [Render](https://render.com) account
+2. Connect your GitHub repository
+3. Create a new **Web Service** with these settings:
+   - **Runtime**: Python
+   - **Build Command**: `pip install -r requirements.txt` (or leave blank if no dependencies)
+   - **Start Command**: `python backend/app.py`
+   - **Region**: Your preferred region
+   - **Plan**: Free (or higher)
+4. Add environment variable `PORT` with the value `10000` (Render's default port)
+5. Deploy!
 
-This project is licensed under the MIT License.
+The app will be available at `https://your-service-name.onrender.com`
